@@ -21,13 +21,13 @@
       <aside class="docs-menu menu">
         <p class="menu-label">General</p>
         <ul class="menu-list"><li>
-              <a  href="pages/general/job/">Jobs and runs</a>
+              <a  class="is-active"  href="pages/general/job/">Jobs and runs</a>
             </li><li>
               <a  href="pages/general/clients/">Client</a>
             </li></ul>
         <p class="menu-label">Task runners</p>
         <ul class="menu-list"><li>
-              <a  class="is-active"  href="pages/runners/extractors/">Extractors</a>
+              <a  href="pages/runners/extractors/">Extractors</a>
             </li><li>
               <a  href="pages/runners/transformers/">Transformers</a>
             </li><li>
@@ -50,88 +50,77 @@
       </aside>
       <div class="docs-body section">
         <div class="container is-fluid">
-          <h4 class="title is-4">Extractors</h4>
+          <h4 class="title is-4">Jobs and runs</h4>
           <div class="content">
             
-<p class="subtitle is-5">CSVExtractor</p>
-<p>This runner extracts tasks from a CSV file. One task per row. It has the following configuration options:</p>
-<ul>
-  <li><code>dataFile</code> - <strong>mandatory</strong> <i>string</i> - the path to the CSV file</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>hasHeaders</code> - <i>boolean</i> - whether the file has a header row, defaults to true</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash. The key value will be a hash of the row values in JSON.</li>
-  <li><code>headersToCamelCase</code> - <i>boolean</i> - whether to convert the heading column into camel case</li>
-  <li><code>ignoreHeaders</code> - <i>boolean</i> - use column numbers instead of the first row as column names</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.item</code> - the row of data from the source file</li>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
-  <li><code>message.currentHash</code> - the hash of the data. Added if a hashName is configured.</li>
-  <li><code>message.previousHash</code> - the hash of the data from a previous run. Added if a hashName is configured.</li>
-</ul>
-
-<p class="subtitle is-5">FileSystemExtractor</p>
-<p>This runner extracts tasks from a file system. One task per document or directory. It has the following configuration options:</p>
-<ul>
-  <li><code>extractLocation</code> - <strong>mandatory</strong> <i></i> - the directory where extract starts</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>createDirectoryTasks</code> - <i>boolean</i> - whether to create tasks for directories or not, defaults to true</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash.</li>
-  <li><code>ignore</code> - different types of ignore options:
-    <ul>
-      <li><code>maxSize</code> - <i>number</i> - files larger than this size will be ignored, in bytes</li>
-      <li><code>minSize</code> - <i>number</i> - files smaller than this size will be ignored, in bytes</li>
-      <li><code>name</code> - <i>regex array</i> - ignore files or directories. This will check file names and directory paths. All files below an ignored directory will also be ignored.</li>
-    </ul>
-  </li>
-  <li><code>quarantinedLookupName</code> - <i>string</i> - the name for the quarantine lookup, defaults to quarantinedFileSystemExtractor</li>
-  <li><code>recursive</code> - <i>boolean</i> - whether to extract from child directories, defaults to true</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source row</li>
-  <li><code>message.extractLocation</code> - the directory where the extract started</li>
-  <li><code>message.isDirectory</code> - whether it is a file (FALSE) or a directory (TRUE)</li>
-  <li><code>message.name</code> - the name of the file or directory</li>
-  <li><code>message.path</code> - path to the file or directory</li>
-  <li><code>message.pathHash</code> - hash of the path to the file or directory</li>
-  <li><code>message.quarantine</code> - the lookup to add to quarantine the file</li>
-  <li><code>message.sourceFile</code> - path to the file</li>
-  <li><code>message.stats</code> - Node stats object for the file or directory</li>
-</ul>
-
-<p class="subtitle is-5">JSONExtractor</p>
-<p>This runner extracts tasks from a JSON file. One task per object. It has the following configuration options:</p>
-<ul>
-  <li><code>dataFile</code> - <strong>mandatory</strong> <i>string</i> - the path to the CSV file</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash. The key value will be a hash of the row values in JSON.</li>
-  <li><code>keysToCamelCase</code> - <i>boolean</i> - convert the property name to camel case, defaults to false</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
-  <li><code>message.currentHash</code> - the hash of the data. Added if a hashName is configured.</li>
-  <li><code>message.item</code> - the row of data from the source file</li>
-  <li><code>message.previousHash</code> - the hash of the data from a previous run. Added if a hashName is configured.</li>
-</ul>
-
-<p class="subtitle is-5">MockExtractor</p>
-<p>This runner mocks extracting objects from a source system. It has the following configuration options:</p>
-<ul>
-  <li><code>generateError</code> - <i>number</i> - whether to generate a random error. The smaller the
-    number the more likely an error. 1 gives an error every time.</li>
-    <li><code>messages</code> - <i>number</i> - how many tasks to create, defaults to 10</li>
-    <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
-</ul>
+<p>The job is divided between extract and load sections. Generally the extract section should be kept for runners
+  that create multiple tasks. Things like iterating through a directory structure to create tasks for each directory or
+  file found in the structure. Or scanning through a CSV file, creating a task to process each line in the file.</p>
+<p>The load section contains the transformers that update or expand the data captured in the extract, or
+  loaders that create or update objects in a target system.</p>
+<p>When a run is started from a job the extract tasks are started. The extractor will create a task for each item that
+  is to be copied or updated. Each task includes a message section that is built up during processing. The message is
+  populated with information needed by later runners as well as outcomes from the runners.</p>
+<p>The following example shows the message for a job with three runners. One to create a task for each file under a
+  specific folder, a transformer to lookup data in different customer specific data source and a final runner that
+  uplaods the file to a cloud based document management system:</p>
+<p>
+<pre><code>"message": {
+  "path": "E:\\staging\\Digital Files\\SMITH, Fred - 999999\\Smith, Fred 999999.pdf",
+  "name": "Smith, Fred 999999.pdf",
+  "stats": {
+    "dev": 3967843523,
+    "mode": 33206,
+    "nlink": 1,
+    "uid": 0,
+    "gid": 0,
+    "rdev": 0,
+    "blksize": 4096,
+    "ino": 9570149208403216,
+    "size": 11,
+    "blocks": 0,
+    "atimeMs": 1665007307034.1494,
+    "mtimeMs": 1665007289296.3735,
+    "ctimeMs": 1665007312542.7795,
+    "birthtimeMs": 1665007307033.1482,
+    "atime": "2022-10-05T22:01:47.034Z",
+    "mtime": "2022-10-05T22:01:29.296Z",
+    "ctime": "2022-10-05T22:01:52.543Z",
+    "birthtime": "2022-10-05T22:01:47.033Z"
+  },
+  "isDirectory": false,
+  "pathHash": "851c15d434b8a550772b7fafcb1857adcf55c064",
+  "extractId": "851c15d434b8a550772b7fafcb1857adcf55c064",
+  "quarantine": {
+    "name": "quarantinedFileSystemExtractor",
+    "key": "851c15d434b8a550772b7fafcb1857adcf55c064",
+    "value": "C:\\code\\sandpit\\source\\Stage_Employee_Personnel_Files\\Digital Files\\SMITH, Fred - 999999\\Smith, Fred 999999.pdf"
+  },
+  "currentHash": {
+    "name": "test001",
+    "key": "851c15d434b8a550772b7fafcb1857adcf55c064",
+    "value": "f9c6491fe7b65eaa0718ea344ee16fd115a48051"
+  },
+  "previousHash": "not found",
+  "sourceFile": "C:\\code\\sandpit\\source\\Stage_Employee_Personnel_Files\\Digital Files\\SMITH, Fred - 999999\\Smith, Fred 999999.pdf",
+  "extractLocation": "C:\\code\\sandpit\\source\\Stage_Employee_Personnel_Files",
+  "employeeId": 107200,
+  "docType": "xecmsf_sfdoc_network_archive_document",
+  "matchedDocTypes": [],
+  "docDate": "2022-10-06",
+  "commands": [
+    "XECM_UPLOAD_FILE Smith, Fred 999999.pdf",
+    "XECM_CONTENT_TYPE application/pdf",
+    "XECM_USER 999999",
+    "XECM_DOC_TYPE xecmsf_sfdoc_network_archive_document",
+    "XECMSF_DOC_META 2022-10-06"
+  ],
+  "lifebloodTransformerComplete": "2022-10-05T22:03:11.196Z",
+  "workspaceId": "14970c20-783f-4f33-8fb8-f73edf6897d1",
+  "outcome": "Uploaded",
+  "coreSFLoaderComplete": "2022-10-05T22:03:18.386Z"
+},</code></pre>
+</p>
           </div>
         </div>
       </div>

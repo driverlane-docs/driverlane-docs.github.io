@@ -27,7 +27,7 @@
             </li></ul>
         <p class="menu-label">Task runners</p>
         <ul class="menu-list"><li>
-              <a  class="is-active"  href="pages/runners/extractors/">Extractors</a>
+              <a  href="pages/runners/extractors/">Extractors</a>
             </li><li>
               <a  href="pages/runners/transformers/">Transformers</a>
             </li><li>
@@ -39,7 +39,7 @@
             </li></ul>
         <p class="menu-label">Development</p>
         <ul class="menu-list"><li>
-              <a  href="pages/development/overview/">Overview</a>
+              <a  class="is-active"  href="pages/development/overview/">Overview</a>
             </li><li>
               <a  href="pages/development/creating-runners/">Creating runners</a>
             </li><li>
@@ -50,88 +50,36 @@
       </aside>
       <div class="docs-body section">
         <div class="container is-fluid">
-          <h4 class="title is-4">Extractors</h4>
+          <h4 class="title is-4">Overview</h4>
           <div class="content">
             
-<p class="subtitle is-5">CSVExtractor</p>
-<p>This runner extracts tasks from a CSV file. One task per row. It has the following configuration options:</p>
-<ul>
-  <li><code>dataFile</code> - <strong>mandatory</strong> <i>string</i> - the path to the CSV file</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>hasHeaders</code> - <i>boolean</i> - whether the file has a header row, defaults to true</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash. The key value will be a hash of the row values in JSON.</li>
-  <li><code>headersToCamelCase</code> - <i>boolean</i> - whether to convert the heading column into camel case</li>
-  <li><code>ignoreHeaders</code> - <i>boolean</i> - use column numbers instead of the first row as column names</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.item</code> - the row of data from the source file</li>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
-  <li><code>message.currentHash</code> - the hash of the data. Added if a hashName is configured.</li>
-  <li><code>message.previousHash</code> - the hash of the data from a previous run. Added if a hashName is configured.</li>
-</ul>
+<p>When creating your branch use the development branch. The development branch will be merged into master as required.
+</p>
+<p>If you're making changes to the shared or runners projects you'll probably want to use a npm link version of the
+  library for the development. A new version will be published to NPM at the point it's merged from development into
+  master.</p>
+<p class="subtitle is-5">portable & client npm link usage</p>
+<p>After making your first change to the shared or runners libraries run <code>npm link</code> in each folder once
+  you've run the
+  appropriate build command the following to create the linked libraries.</p>
+<p>Any npm install or uninstall will reinstall the npm hosted version of the libraries. To reset the projects to use the
+  local copies:</p>
+<p>
+<pre><code>
+# in both the client and runners projects run
+npm link @driverlane/ethel-shared
 
-<p class="subtitle is-5">FileSystemExtractor</p>
-<p>This runner extracts tasks from a file system. One task per document or directory. It has the following configuration options:</p>
-<ul>
-  <li><code>extractLocation</code> - <strong>mandatory</strong> <i></i> - the directory where extract starts</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>createDirectoryTasks</code> - <i>boolean</i> - whether to create tasks for directories or not, defaults to true</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash.</li>
-  <li><code>ignore</code> - different types of ignore options:
-    <ul>
-      <li><code>maxSize</code> - <i>number</i> - files larger than this size will be ignored, in bytes</li>
-      <li><code>minSize</code> - <i>number</i> - files smaller than this size will be ignored, in bytes</li>
-      <li><code>name</code> - <i>regex array</i> - ignore files or directories. This will check file names and directory paths. All files below an ignored directory will also be ignored.</li>
-    </ul>
-  </li>
-  <li><code>quarantinedLookupName</code> - <i>string</i> - the name for the quarantine lookup, defaults to quarantinedFileSystemExtractor</li>
-  <li><code>recursive</code> - <i>boolean</i> - whether to extract from child directories, defaults to true</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source row</li>
-  <li><code>message.extractLocation</code> - the directory where the extract started</li>
-  <li><code>message.isDirectory</code> - whether it is a file (FALSE) or a directory (TRUE)</li>
-  <li><code>message.name</code> - the name of the file or directory</li>
-  <li><code>message.path</code> - path to the file or directory</li>
-  <li><code>message.pathHash</code> - hash of the path to the file or directory</li>
-  <li><code>message.quarantine</code> - the lookup to add to quarantine the file</li>
-  <li><code>message.sourceFile</code> - path to the file</li>
-  <li><code>message.stats</code> - Node stats object for the file or directory</li>
-</ul>
+# in the portable project run
+npm link @driverlane/ethel-shared @driverlane/ethel-runners
+</code></pre>
+</p>
 
-<p class="subtitle is-5">JSONExtractor</p>
-<p>This runner extracts tasks from a JSON file. One task per object. It has the following configuration options:</p>
-<ul>
-  <li><code>dataFile</code> - <strong>mandatory</strong> <i>string</i> - the path to the CSV file</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash. The key value will be a hash of the row values in JSON.</li>
-  <li><code>keysToCamelCase</code> - <i>boolean</i> - convert the property name to camel case, defaults to false</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
-  <li><code>message.currentHash</code> - the hash of the data. Added if a hashName is configured.</li>
-  <li><code>message.item</code> - the row of data from the source file</li>
-  <li><code>message.previousHash</code> - the hash of the data from a previous run. Added if a hashName is configured.</li>
-</ul>
-
-<p class="subtitle is-5">MockExtractor</p>
-<p>This runner mocks extracting objects from a source system. It has the following configuration options:</p>
-<ul>
-  <li><code>generateError</code> - <i>number</i> - whether to generate a random error. The smaller the
-    number the more likely an error. 1 gives an error every time.</li>
-    <li><code>messages</code> - <i>number</i> - how many tasks to create, defaults to 10</li>
-    <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
-</ul>
+<p class="subtitle is-5">Client</p>
+<p>If you're using <code>ng serve</code> to run the client, run <code>npm run styles</code> first. The CSS created by
+  this task isn't committed to the repository.</p>
+<p>If you're having trouble with Angular handling the sass files used in the client project you may have hit a problem
+  with the sass installation failing. Your system may need the node complation tools to correctly install the module.
+</p>
           </div>
         </div>
       </div>

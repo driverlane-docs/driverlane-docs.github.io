@@ -27,7 +27,7 @@
             </li></ul>
         <p class="menu-label">Task runners</p>
         <ul class="menu-list"><li>
-              <a  class="is-active"  href="pages/runners/extractors/">Extractors</a>
+              <a  href="pages/runners/extractors/">Extractors</a>
             </li><li>
               <a  href="pages/runners/transformers/">Transformers</a>
             </li><li>
@@ -43,95 +43,48 @@
             </li><li>
               <a  href="pages/development/creating-runners/">Creating runners</a>
             </li><li>
-              <a  href="pages/development/servers/">Architecture</a>
+              <a  class="is-active"  href="pages/development/servers/">Architecture</a>
             </li><li>
               <a  href="pages/development/clients/">Client</a>
             </li></ul>
       </aside>
       <div class="docs-body section">
         <div class="container is-fluid">
-          <h4 class="title is-4">Extractors</h4>
+          <h4 class="title is-4">Architecture</h4>
           <div class="content">
             
-<p class="subtitle is-5">CSVExtractor</p>
-<p>This runner extracts tasks from a CSV file. One task per row. It has the following configuration options:</p>
-<ul>
-  <li><code>dataFile</code> - <strong>mandatory</strong> <i>string</i> - the path to the CSV file</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>hasHeaders</code> - <i>boolean</i> - whether the file has a header row, defaults to true</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash. The key value will be a hash of the row values in JSON.</li>
-  <li><code>headersToCamelCase</code> - <i>boolean</i> - whether to convert the heading column into camel case</li>
-  <li><code>ignoreHeaders</code> - <i>boolean</i> - use column numbers instead of the first row as column names</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.item</code> - the row of data from the source file</li>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
-  <li><code>message.currentHash</code> - the hash of the data. Added if a hashName is configured.</li>
-  <li><code>message.previousHash</code> - the hash of the data from a previous run. Added if a hashName is configured.</li>
-</ul>
+<p>The high level thinking about the ethel architecture is based on these basic customer environment assumptions:
+<ol>
+  <li>most engagements will involve one or many resources in a LAN as the source or target. This LAN may include third
+    party cloud providers, but the resources will be firewalled off from the internet, often very aggressively.</li>
+  <li>in a few cases, ethel will have to run on a server with no access to the internet</li>
+  <li>some customers will require a docker based solution, running on their own servers</li>
+  <li>but most customers will not care or constrain the solution and only point one is relevant for these customers</li>
+</ol>
 
-<p class="subtitle is-5">FileSystemExtractor</p>
-<p>This runner extracts tasks from a file system. One task per document or directory. It has the following configuration options:</p>
-<ul>
-  <li><code>extractLocation</code> - <strong>mandatory</strong> <i></i> - the directory where extract starts</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>createDirectoryTasks</code> - <i>boolean</i> - whether to create tasks for directories or not, defaults to true</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash.</li>
-  <li><code>ignore</code> - different types of ignore options:
-    <ul>
-      <li><code>maxSize</code> - <i>number</i> - files larger than this size will be ignored, in bytes</li>
-      <li><code>minSize</code> - <i>number</i> - files smaller than this size will be ignored, in bytes</li>
-      <li><code>name</code> - <i>regex array</i> - ignore files or directories. This will check file names and directory paths. All files below an ignored directory will also be ignored.</li>
-    </ul>
-  </li>
-  <li><code>quarantinedLookupName</code> - <i>string</i> - the name for the quarantine lookup, defaults to quarantinedFileSystemExtractor</li>
-  <li><code>recursive</code> - <i>boolean</i> - whether to extract from child directories, defaults to true</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source row</li>
-  <li><code>message.extractLocation</code> - the directory where the extract started</li>
-  <li><code>message.isDirectory</code> - whether it is a file (FALSE) or a directory (TRUE)</li>
-  <li><code>message.name</code> - the name of the file or directory</li>
-  <li><code>message.path</code> - path to the file or directory</li>
-  <li><code>message.pathHash</code> - hash of the path to the file or directory</li>
-  <li><code>message.quarantine</code> - the lookup to add to quarantine the file</li>
-  <li><code>message.sourceFile</code> - path to the file</li>
-  <li><code>message.stats</code> - Node stats object for the file or directory</li>
-</ul>
+With these basic asumptions, we can see value in these flavours of ethel, created roughly in this order:
 
-<p class="subtitle is-5">JSONExtractor</p>
-<p>This runner extracts tasks from a JSON file. One task per object. It has the following configuration options:</p>
 <ul>
-  <li><code>dataFile</code> - <strong>mandatory</strong> <i>string</i> - the path to the CSV file</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash. The key value will be a hash of the row values in JSON.</li>
-  <li><code>keysToCamelCase</code> - <i>boolean</i> - convert the property name to camel case, defaults to false</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
-  <li><code>message.currentHash</code> - the hash of the data. Added if a hashName is configured.</li>
-  <li><code>message.item</code> - the row of data from the source file</li>
-  <li><code>message.previousHash</code> - the hash of the data from a previous run. Added if a hashName is configured.</li>
-</ul>
+  <li>standalone Node.js solution, to support assumption two. Can also be used for assumption one until there's a cloud based ethel server.</li>
+  <li>Web client - Angular based on our experience with the framework</li>
+  <li>Node.js agent able to talk to internet based ethel deployments, to support assumption one with a cloud based ethel server</li>
+  <li>dockerised verson of the standalone Node.js version to support assumption three</li>
+  <li>commodity cloud based queue and database solutions, to support assumption one, which will probably just be the dockerised version</li>
+</ul></p>
 
-<p class="subtitle is-5">MockExtractor</p>
-<p>This runner mocks extracting objects from a source system. It has the following configuration options:</p>
-<ul>
-  <li><code>generateError</code> - <i>number</i> - whether to generate a random error. The smaller the
-    number the more likely an error. 1 gives an error every time.</li>
-    <li><code>messages</code> - <i>number</i> - how many tasks to create, defaults to 10</li>
-    <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
-</ul>
+<p>We've worked through various forms of the server and you'll see some evidence of it in the repository, but at the moment
+  we're focusing on the standalone Node.js version until we're happy with that. Then it's a toss up whether to focus on the agent
+  or the dockerised version of ethel. We're expecting that the agent will be another Node.js solution as it will have a
+  lot in common with the standalone Node.js version of ethel. The dockerised version of ethel will probably start as the
+  portable Node.js version, but if that doesn't scale up, probably something like a .net Martin/Wolverine RabbitMQ
+  PostGRES solution.
+</p>
+
+<p>The Node.js standalone version (i.e. portable in the repository) is a Nest.js solution. It uses the Nest.js CQRS
+  module to provide some event sourcing architecture that has probably been applied fairly naively. It also uses the
+  better-queue library to provide queue functionality for the task management.</p>
+
+
           </div>
         </div>
       </div>

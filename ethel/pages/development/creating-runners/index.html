@@ -27,7 +27,7 @@
             </li></ul>
         <p class="menu-label">Task runners</p>
         <ul class="menu-list"><li>
-              <a  class="is-active"  href="pages/runners/extractors/">Extractors</a>
+              <a  href="pages/runners/extractors/">Extractors</a>
             </li><li>
               <a  href="pages/runners/transformers/">Transformers</a>
             </li><li>
@@ -41,7 +41,7 @@
         <ul class="menu-list"><li>
               <a  href="pages/development/overview/">Overview</a>
             </li><li>
-              <a  href="pages/development/creating-runners/">Creating runners</a>
+              <a  class="is-active"  href="pages/development/creating-runners/">Creating runners</a>
             </li><li>
               <a  href="pages/development/servers/">Architecture</a>
             </li><li>
@@ -50,88 +50,76 @@
       </aside>
       <div class="docs-body section">
         <div class="container is-fluid">
-          <h4 class="title is-4">Extractors</h4>
+          <h4 class="title is-4">Creating runners</h4>
           <div class="content">
             
-<p class="subtitle is-5">CSVExtractor</p>
-<p>This runner extracts tasks from a CSV file. One task per row. It has the following configuration options:</p>
-<ul>
-  <li><code>dataFile</code> - <strong>mandatory</strong> <i>string</i> - the path to the CSV file</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>hasHeaders</code> - <i>boolean</i> - whether the file has a header row, defaults to true</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash. The key value will be a hash of the row values in JSON.</li>
-  <li><code>headersToCamelCase</code> - <i>boolean</i> - whether to convert the heading column into camel case</li>
-  <li><code>ignoreHeaders</code> - <i>boolean</i> - use column numbers instead of the first row as column names</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.item</code> - the row of data from the source file</li>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
-  <li><code>message.currentHash</code> - the hash of the data. Added if a hashName is configured.</li>
-  <li><code>message.previousHash</code> - the hash of the data from a previous run. Added if a hashName is configured.</li>
-</ul>
+<p>todo: this, but basically copy from a mock version</p>
 
-<p class="subtitle is-5">FileSystemExtractor</p>
-<p>This runner extracts tasks from a file system. One task per document or directory. It has the following configuration options:</p>
+<p>There are a number of generic utilities provided to every task runner via the task and logging services as well as
+  the base TaskRunner class.</p>
+<p><strong>TaskRunner</strong>
 <ul>
-  <li><code>extractLocation</code> - <strong>mandatory</strong> <i></i> - the directory where extract starts</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>createDirectoryTasks</code> - <i>boolean</i> - whether to create tasks for directories or not, defaults to true</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash.</li>
-  <li><code>ignore</code> - different types of ignore options:
-    <ul>
-      <li><code>maxSize</code> - <i>number</i> - files larger than this size will be ignored, in bytes</li>
-      <li><code>minSize</code> - <i>number</i> - files smaller than this size will be ignored, in bytes</li>
-      <li><code>name</code> - <i>regex array</i> - ignore files or directories. This will check file names and directory paths. All files below an ignored directory will also be ignored.</li>
-    </ul>
-  </li>
-  <li><code>quarantinedLookupName</code> - <i>string</i> - the name for the quarantine lookup, defaults to quarantinedFileSystemExtractor</li>
-  <li><code>recursive</code> - <i>boolean</i> - whether to extract from child directories, defaults to true</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
+  <li>config - the full job config object</li>
+  <li>logger - the logger service</li>
+  <li>task - the config object for this task runner</li>
+  <li>taskService - the TaskService object</li>
+  <li>getNextRunner - returns the next task runner defined in the job</li>
+  <li>hashGet - creates a hash of the value supplied</li>
+  <li>processTask - this is the stub function called by the server that should be overloaded in each runner</li>
+  <li>raiseNextTask - starts the next task runner defined in the job</li>
+  <li>stateSave - saves the state on the current task</li>
+  <li>toCamelCase - converts a string with spaces to camel case</li>
+  <li>wait - simple sleep function</li>
 </ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
+</p>
+<p><strong>Task service</strong>
 <ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source row</li>
-  <li><code>message.extractLocation</code> - the directory where the extract started</li>
-  <li><code>message.isDirectory</code> - whether it is a file (FALSE) or a directory (TRUE)</li>
-  <li><code>message.name</code> - the name of the file or directory</li>
-  <li><code>message.path</code> - path to the file or directory</li>
-  <li><code>message.pathHash</code> - hash of the path to the file or directory</li>
-  <li><code>message.quarantine</code> - the lookup to add to quarantine the file</li>
-  <li><code>message.sourceFile</code> - path to the file</li>
-  <li><code>message.stats</code> - Node stats object for the file or directory</li>
+  <li>cache - an optional object that implements the CacheProvider interface</li>
+  <li>lookupAdd - adds a lookup. Set encrypted to true if it is an encrypted lookup</li>
+  <li>lookupDelete - deletes a lookup</li>
+  <li>lookupGet - gets a lookup</li>
+  <li>lookupGetValue - gets the value stored on a lookup</li>
+  <li>lookupUpdate - updates a lookup. Set encrypted to true if it is an encrypted lookup.</li>
+  <li>stateSave - saves the state on the current task</li>
+  <li>taskRaise - general method for raising a new task. Multiple examples in existing runners</li>
 </ul>
+</p>
+<p><strong>Logger service</strong><br>Use <i>this.logger.verbose('...'), this.logger.debug('...')</i>, etc. to log
+  information to the verbose, debug, log, warn and error log levels. These levels are used to stay lin line with those used in Nest.js.</p>
 
-<p class="subtitle is-5">JSONExtractor</p>
-<p>This runner extracts tasks from a JSON file. One task per object. It has the following configuration options:</p>
-<ul>
-  <li><code>dataFile</code> - <strong>mandatory</strong> <i>string</i> - the path to the CSV file</li>
-  <li><code>batchSize</code> - <i>number</i> - the number of items to be processed in a run. Will be ignored without a hashName setting</li>
-  <li><code>hashName</code> - <i>string</i> - the lookup name for storing the source object hash. The key value will be a hash of the row values in JSON.</li>
-  <li><code>keysToCamelCase</code> - <i>boolean</i> - convert the property name to camel case, defaults to false</li>
-  <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
-</ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
-<ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
-  <li><code>message.currentHash</code> - the hash of the data. Added if a hashName is configured.</li>
-  <li><code>message.item</code> - the row of data from the source file</li>
-  <li><code>message.previousHash</code> - the hash of the data from a previous run. Added if a hashName is configured.</li>
-</ul>
+  ---
+layout: page-layout.njk
+type: utility
+title: Lookups
+order: 20
+---
 
-<p class="subtitle is-5">MockExtractor</p>
-<p>This runner mocks extracting objects from a source system. It has the following configuration options:</p>
+<p>This object allows you to save key value pairs for later use. There are two ways to provide lookup functionality:
 <ul>
-  <li><code>generateError</code> - <i>number</i> - whether to generate a random error. The smaller the
-    number the more likely an error. 1 gives an error every time.</li>
-    <li><code>messages</code> - <i>number</i> - how many tasks to create, defaults to 10</li>
-    <li><code>updateStatus</code> - <i>number</i> - when the status should be logged to the console</li>
+  <li>task service - this approach saves the lookup in the sqlite database. The value will available as long as the data
+    source file is not deleted. Useful for providing lookups between runs, like file hashes.</li>
+  <li>cache provider - this approach save lookups in memory and will not be available after the object that instantiated
+    the cache is destroyed. Useful for storing short lived data like credentials for external APIs.</li>
 </ul>
-<p>It populates the following attributes in the new tasks it creates:</p>
+</p>
+<p>An example of using a cache provider can be found on the <i>OTCSApi</i> object used by a number of Content Server
+  runners.</p>
+<p>A lookup is a key value pair with a name property to group related lookups together to allow bulk processing.
 <ul>
-  <li><code>message.extractId</code> - an ID used to connect all runners to the source item</li>
+  <li>name - <i>string</i> - the name of the type of lookup. The name is used for bulk adding or deleting lookups without having to worry about key value collisions</li>
+  <li>key - <i>string</i> - the lookup key</li>
+  <li>value - <i>string</i> - the lookup value. Use JSON for objects</li>
+  <li>encrypted - <i>boolean</i> - whether the lookup is encrypted</li>
 </ul>
+</p>
+<p><strong>Lookup functions</strong>
+<ul>
+  <li>lookupAdd - adds a lookup. A time to live value can be supplied for cache based providers.</li>
+  <li>lookupDelete - deletes the specified lookup.</li>
+  <li>lookupGet - returns the specified lookup.</li>
+  <li>lookupUpdate - updates the specified lookup. A time to live value can be supplied for cache based providers.</li>
+</ul>
+</p>
           </div>
         </div>
       </div>
